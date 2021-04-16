@@ -25,7 +25,7 @@ function Get-AuthToken {
 .SYNOPSIS
 This function is used to authenticate with the Graph API REST interface
 .DESCRIPTION
-The function authenticate with the Graph API Interface with the tenant name
+# The function authenticate with the Graph API Interface with the tenant name
 .EXAMPLE
 Get-AuthToken
 Authenticates you with the Graph API interface
@@ -448,6 +448,8 @@ $Devices = Get-Win10IntuneManagedDevice
 
 Foreach ($Device in $Devices){ 
 
+    try{
+
         Write-Host "Device name:" $device."deviceName" -ForegroundColor Cyan
         $IntuneDevicePrimaryUser = Get-IntuneDevicePrimaryUser -deviceId $Device.id
 
@@ -489,6 +491,13 @@ Foreach ($Device in $Devices){
                 Write-Host "The user '$($User.displayName)' is already the Primary User on the device..." -ForegroundColor Yellow
 
             }
+
+    }
+    Catch {
+
+        Write-Host "Could not set Primary User on Intune Managed Device" $Device."deviceName" ". Manual intervention may be required." -f Red 
+
+    }
 
     Write-Host
 
