@@ -445,8 +445,11 @@ else {
 
 #Get All Windows 10 Intune Managed Devices for the Tenant
 $Devices = Get-Win10IntuneManagedDevice
+$failedList = @()
 
 Foreach ($Device in $Devices){ 
+
+    try{
 
         Write-Host "Device name:" $device."deviceName" -ForegroundColor Cyan
         $IntuneDevicePrimaryUser = Get-IntuneDevicePrimaryUser -deviceId $Device.id
@@ -485,11 +488,30 @@ Foreach ($Device in $Devices){
             }
 
             else {
+
                 #If the user is the same, then write to host that the primary user is already correct.
                 Write-Host "The user '$($User.displayName)' is already the Primary User on the device..." -ForegroundColor Yellow
 
             }
 
+    }
+    Catch {
+        # Warn on screen and log to a list which can be displayed as a final summary
+        Write-Host "Could not set Primary User on Intune Managed Device" $Device."deviceName" ". Manual intervention may be required." -f Red 
+        $failedList += $Device."deviceName"
+
+    }
+
     Write-Host
+
+}
+
+# If any devices failed, display a summary:
+if ($failedList.Count -ge 1) {
+
+    Write-Host "The following device(s) failed to have the Primary User set." -f Red
+    Foreach ($element in $failedList) {
+        Write-Host $element -f Red
+    }
 
 }
