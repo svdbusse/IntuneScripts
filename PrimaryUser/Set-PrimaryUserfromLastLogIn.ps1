@@ -25,7 +25,7 @@ function Get-AuthToken {
 .SYNOPSIS
 This function is used to authenticate with the Graph API REST interface
 .DESCRIPTION
-# The function authenticate with the Graph API Interface with the tenant name
+The function authenticate with the Graph API Interface with the tenant name
 .EXAMPLE
 Get-AuthToken
 Authenticates you with the Graph API interface
