@@ -77,10 +77,22 @@ param
         else {
 
             $Resource = "deviceManagement/managedDevices?`$filter=(((deviceType%20eq%20%27desktop%27)%20or%20(deviceType%20eq%20%27windowsRT%27)%20or%20(deviceType%20eq%20%27winEmbedded%27)%20or%20(deviceType%20eq%20%27surfaceHub%27)))"
-	        $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)"
-        
-            (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).value
+	    $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)"
+            
+            $DeviceResults = Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get
+            $Results = @()
+            $Results += $DeviceResults.value
 
+            $NextPage = $DeviceResults.'@odata.nextLink'
+            while($null -ne $NextPage) {
+
+                $Additional = Invoke-RestMethod -Uri $NextPage -Headers $authToken -Method Get
+                if($NextPage) {
+                    $NextPage = $Additional.'@odata.nextLink'
+                }
+                $Results += $Additional.value
+            }
+            $Results
         }
 
 	} catch {
