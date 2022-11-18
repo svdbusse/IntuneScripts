@@ -466,8 +466,17 @@ Foreach ($Device in $Devices){
 
         #Get the objectID of the last logged in user for the device, which is the last object in the list of usersLoggedOn
         $LastLoggedInUser = ($Device.usersLoggedOn[-1]).userId
+		
+		#Check if there is a last logged on user
+		if($LastLoggedInUser -eq $null){
 
-        #Using the objectID, get the user from the Microsoft Graph for logging purposes
+            Write-Host "No last logged on user set for Intune Managed Device" $Device."deviceName" -f Red 
+
+        }
+
+        else {
+        
+		#Using the objectID, get the user from the Microsoft Graph for logging purposes
         $User = Get-AADUser -userPrincipalName $LastLoggedInUser
     
             #Check if the current primary user of the device is the same as the last logged in user
@@ -489,6 +498,9 @@ Foreach ($Device in $Devices){
                 Write-Host "The user '$($User.displayName)' is already the Primary User on the device..." -ForegroundColor Yellow
 
             }
+
+        }
+  
 
     Write-Host
 
